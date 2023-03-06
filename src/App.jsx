@@ -1,14 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 
 function App() {
   const [input, setinput] = useState("");
-  const [todos, settodos] = useState(["todo1"]);
+  const [todos, settodos] = useState([]);
 
-  
- async function savetoLocal() {
-    return  localStorage.setItem("Todos", JSON.stringify(...todos,input));
+  // TODO: FOR Students:-> 
+  //! 1. clear input field after adding todo 
+  //! 2. create two different lists one for completed tasks and other for incompleted tasks
+// const [todoInput, settodoInput] = useState({
+//   task: "",
+//   date: "",
+//   isComplete: false
+// })
+  async function savetoLocal() {
+    localStorage.setItem("Todos", JSON.stringify([...todos, input]));
+    settodos([...todos, input]);
   }
+
+  // async function removeFromLocal(todo){
+     
+  //     let todoList = todos.filter((t)=> todo !=t);
+  //     settodos(todoList)
+  //   localStorage.setItem("Todos", JSON.stringify([...todoList]));
+      
+    
+  // }
+
+  function handleRemove(todo) {
+    console.log(todo);
+    // todo = todo3
+    let filteredTodo = todos.filter(function(t){
+     return todo !=t
+    })
+    // console.log(filteredTodo)
+    settodos(filteredTodo)
+    localStorage.setItem("Todos", JSON.stringify([...filteredTodo]))
+  }
+
+  useEffect(() => {
+    let todoList = JSON.parse(localStorage.getItem("Todos"));
+    settodos(todoList);
+  }, []);
+
   return (
     <div className="row justify-content-center">
       <div className="col-6">
@@ -28,23 +62,24 @@ function App() {
           </button>
         </div>
 
-        {todos.map((todo) => {
+        {todos ? todos.map((todo) => {
           return (
-            <div className="p-2">
-              <div class="form-check">
+            <div key={todo} className="p-2">
+              <div className="form-check">
                 <input
-                  class="form-check-input"
+                  className="form-check-input"
                   type="checkbox"
                   value=""
+                  onChange={()=> handleRemove(todo)}
                   id="flexCheckDefault"
                 />
-                <label class="form-check-label" for="flexCheckDefault">
+                <label className="form-check-label" htmlFor="flexCheckDefault">
                   <h4>{todo}</h4>
                 </label>
               </div>
             </div>
           );
-        })}
+        }): <h3 className="text-center">No todos added</h3>} 
       </div>
     </div>
   );
